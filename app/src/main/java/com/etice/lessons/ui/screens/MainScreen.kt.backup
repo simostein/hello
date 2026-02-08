@@ -1,0 +1,232 @@
+package com.etice.lessons.ui.screens
+
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.etice.lessons.data.models.Language
+import com.etice.lessons.ui.components.*
+import com.etice.lessons.ui.viewmodel.MainViewModel
+import com.etice.lessons.ui.viewmodel.UiState
+import com.etice.lessons.utils.DownloadHelper
+import com.etice.lessons.utils.Strings
+
+@Composable
+fun MainScreen(
+    viewModel: MainViewModel = viewModel()
+) {
+    android.util.Log.d("MainScreen", "=== MainScreen COMPOSING ===")
+    android.util.Log.d("MainScreen", "selectedLevel=${viewModel.selectedLevel?.id}, selectedStage=${viewModel.selectedStage?.id}, selectedWeek=${viewModel.selectedWeek?.id}")
+    
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+    
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(scrollState)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Language Switcher
+        LanguageSwitcher(
+            currentLanguage = viewModel.language,
+            onLanguageChange = { viewModel.toggleLanguage() },
+            modifier = Modifier.padding(vertical = 16.dp)
+        )
+        
+        // Header
+        Icon(
+            imageVector = Icons.Default.MenuBook,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(48.dp)
+        )
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        Text(
+            text = Strings.appTitle(viewModel.language),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = Strings.appSubtitle(viewModel.language),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(32.dp))
+        
+        // Selection Card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp)
+            ) {
+                // Level Dropdown
+                android.util.Log.d("MainScreen", "Level dropdown: always enabled")
+                SelectionDropdown(
+                    label = Strings.selectLevel(viewModel.language),
+                    items = viewModel.levels,
+                    selectedItem = viewModel.selectedLevel,
+                    onItemSelected = { viewModel.selectLevel(it) },
+                    itemLabel = { it.getLabel(viewModel.language) },
+                    language = viewModel.language,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Stage Dropdown
+                val stageEnabled = viewModel.selectedLevel != null
+                android.util.Log.d("MainScreen", "Stage dropdown: enabled=$stageEnabled (selectedLevel=${viewModel.selectedLevel?.id})")
+                key(stageEnabled) {
+                    SelectionDropdown(
+                        label = Strings.selectStage(viewModel.language),
+                        items = viewModel.stages,
+                        selectedItem = viewModel.selectedStage,
+                        onItemSelected = { viewModel.selectStage(it) },
+                        itemLabel = { it.getLabel(viewModel.language) },
+                        enabled = stageEnabled,
+                        language = viewModel.language,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Week Dropdown
+                val weekEnabled = viewModel.selectedStage != null
+                android.util.Log.d("MainScreen", "Week dropdown: enabled=$weekEnabled (selectedStage=${viewModel.selectedStage?.id})")
+                key(weekEnabled) {
+                    SelectionDropdown(
+                        label = Strings.selectWeek(viewModel.language),
+                        items = viewModel.weeks,
+                        selectedItem = viewModel.selectedWeek,
+                        onItemSelected = { viewModel.selectWeek(it) },
+                        itemLabel = { it.getLabel(viewModel.language) },
+                        enabled = weekEnabled,
+                        language = viewModel.language,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // Subject Selection
+                Text(
+                    text = Strings.selectSubject(viewModel.language),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+                
+                viewModel.subjects.forEach { subject ->
+                    SubjectButton(
+                        subject = subject,
+                        label = subject.getLabel(viewModel.language),
+                        isSelected = viewModel.selectedSubject == subject,
+                        onClick = {
+                            if (viewModel.canFetchDocument()) {
+                                viewModel.selectSubject(subject)
+                            }
+                        },
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        // Document Result
+        when (val state = viewModel.uiState) {
+            is UiState.Loading -> {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = Strings.loading(viewModel.language),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            is UiState.Success -> {
+                DocumentCard(
+                    document = state.document,
+                    language = viewModel.language,
+                    onDownload = {
+                        // Try to open in browser first for viewing
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(state.document.url))
+                        try {
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            // Fallback to download
+                            DownloadHelper.downloadDocument(
+                                context,
+                                state.document.url,
+                                state.document.title
+                            )
+                        }
+                    }
+                )
+            }
+            is UiState.Error -> {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Text(
+                        text = state.message,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
+                        modifier = Modifier.padding(16.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            is UiState.Idle -> {
+                if (!viewModel.canFetchDocument()) {
+                    Text(
+                        text = Strings.selectAllFields(viewModel.language),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
