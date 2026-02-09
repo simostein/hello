@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دروس المدرسة الرائدة - التعليم الابتدائي</title>
+    <meta name="description"
+        content="تطبيق دروس المدرسة الرائدة يوفر جميع الوثائق والدروس الصريحة للمستويات الابتدائية وفق المنهاج الجديد.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --primary-dark: #1557b0;
+            --accent-color: #ffca28;
+            --text-dark: #202124;
+            --text-light: #5f6368;
+            --bg-light: #ffffff;
+            --bg-off-white: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            background-color: var(--bg-light);
+            text-align: right;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 5%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-light);
+            margin-left: 20px;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            padding: 60px 5%;
+            background: var(--bg-off-white);
+            min-height: 80vh;
+        }
+
+        .hero-content {
+            flex: 1;
+            padding-left: 50px;
+        }
+
+        .hero-image {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+        }
+
+        .highlight {
+            color: var(--primary-color);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--text-dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background-color: #000;
+        }
+
+        .download-btn img {
+            width: 24px;
+            margin-left: 10px;
+        }
+
+        /* Features Section */
+        .features {
+            padding: 80px 5%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 40px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--text-dark);
+            color: white;
+            padding: 40px 5%;
+            text-align: center;
+        }
+
+        .footer-links {
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero {
+                flex-direction: column-reverse;
+                text-align: center;
+                padding-top: 40px;
+            }
+
+            .hero-content {
+                padding-left: 0;
+                margin-top: 40px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                margin: 0 auto 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <div class="logo">
+            <img src="assets/icon.png" alt="App Icon">
+            دروس المدرسة الرائدة
+        </div>
+        <div class="nav-links">
+            <a href="#features">المميزات</a>
+            <a href="privacy.html">سياسة الخصوصية</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="hero-content">
+            <h1>كل ما تحتاجه للتدريس في <br><span class="highlight">المدرسة الرائدة</span></h1>
+            <p class="subtitle">
+                تطبيق شامل يوفر جميع الوثائق والدروس الصريحة لجميع المستويات الابتدائية. حمل الوثائق بسهولة وتصفحها
+                أينما كنت.
+            </p>
+            <a href="https://play.google.com/store/apps/details?id=com.etice.lessons" class="download-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg"
+                    alt="Google Play" style="width: auto; height: 30px; margin-left: 0; margin-right: 0;">
+                <!-- حمله الآن من Google Play -->
+            </a>
+        </div>
+        <div class="hero-image">
+            <img src="assets/feature.png" alt="App Screenshot">
+        </div>
+    </header>
+
+    <section id="features" class="features">
+        <h2 class="section-title">لماذا هذا التطبيق؟</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">📚</span>
+                <h3 class="feature-title">محتوى شامل</h3>
+                <p>جميع الدروس الصريحة للمستويات 1-6 في مكان واحد.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">⬇️</span>
+                <h3 class="feature-title">تحميل مباشر</h3>
+                <p>حمل ملفات PDF للدروس والوثائق واحتفظ بها على جهازك.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🌐</span>
+                <h3 class="feature-title">ثنائي اللغة</h3>
+                <p>دعم كامل للغة العربية (RTL) والمحتوى بالفرنسية.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#">الرئيسية</a>
+            <a href="privacy.html">سياسة الخصوصية</a>
+            <a href="mailto:support@simostein.com">اتصل بنا</a>
+        </div>
+        <p>&copy; 2026 Simostein. جميع الحقوق محفوظة.</p>
+    </footer>
+
+</body>
+
+</html>
